@@ -1,50 +1,59 @@
-// ======================================================
-// 1. НАЛАШТУВАННЯ
-// ======================================================
-
-// Google Sheets CSV
-// СЮДИ ВСТАВ ПОСИЛАННЯ НА ТВОЮ GOOGLE SHEET
-const SHEET_URL =
-  "https://docs.google.com/spreadsheets/d/ТУТ_ID_ТАБЛИЦІ/export?format=csv&gid=0";
+// =====================================================
+// НАЛАШТУВАННЯ
+// =====================================================
 
 
-// ======================================================
-// 2. TELEGRAM
-// ======================================================
+// 🔴 СЮДИ ВСТАВ ПОСИЛАННЯ GOOGLE APPS SCRIPT
 
-// БЕРЕМО З ПОСИЛАННЯ САЙТУ:
+const API_URL =
+"https://script.google.com/macros/s/AKfycbw4VbZ5BNNO6hzX8FpwptsCaOeASl1oWrlrWAY4lUJXq4oizuAKVx2pCJ6DlmW0jdE0/exec"
+
+// =====================================================
+// TELEGRAM
+// =====================================================
 //
-// https://твій-сайт.github.io/?token=123&chat=456
+// Токен і chat ID беремо з URL самого додатку:
 //
-// Тобто нічого не треба писати тут.
+// https://твій-сайт.github.io/?token=ТОКЕН&chat=CHAT_ID
+//
 
-const params = new URLSearchParams(window.location.search);
+const params =
+  new URLSearchParams(window.location.search);
 
-const BOT_TOKEN = params.get("token");
-const CHAT_ID = params.get("chat");
+const BOT_TOKEN =
+  params.get("token");
+
+const CHAT_ID =
+  params.get("chat");
 
 
-// ======================================================
-// 3. РЕЦЕПТИ
-// ======================================================
+// =====================================================
+// ДАНІ
+// =====================================================
 
 let recipes = [];
-let favoritesOnly = false;
 
 
-// ======================================================
-// 4. ЗАВАНТАЖЕННЯ РЕЦЕПТІВ
-// ======================================================
+// =====================================================
+// ЗАВАНТАЖИТИ РЕЦЕПТИ
+// =====================================================
 
 async function loadRecipes() {
 
+  const container =
+    document.getElementById("recipes");
+
+  container.innerHTML =
+    "<p>Завантажую рецепти... 🍝</p>";
+
+
   try {
 
-    const response = await fetch(SHEET_URL);
+    const response =
+      await fetch(API_URL);
 
-    const csv = await response.text();
-
-    recipes = parseCSV(csv);
+    recipes =
+      await response.json();
 
     renderRecipes();
 
@@ -52,109 +61,88 @@ async function loadRecipes() {
 
     console.error(error);
 
-    document.getElementById("recipes").innerHTML =
+    container.innerHTML =
       "<p>Не вдалося завантажити рецепти 😢</p>";
+
   }
-}
-
-
-// Простий CSV-парсер
-function parseCSV(text) {
-
-  const rows = text.trim().split("\n");
-
-  const headers = rows[0]
-    .split(",")
-    .map(x => x.trim());
-
-  return rows.slice(1).map(row => {
-
-    const values = row.split(",");
-
-    let recipe = {};
-
-    headers.forEach((header, index) => {
-      recipe[header] = values[index]
-        ? values[index].trim()
-        : "";
-    });
-
-    return recipe;
-
-  });
 
 }
 
 
-// ======================================================
-// 5. ПОКАЗ РЕЦЕПТІВ
-// ======================================================
+// =====================================================
+// ПОКАЗАТИ РЕЦЕПТИ
+// =====================================================
 
 function renderRecipes() {
 
-  const container = document.getElementById("recipes");
+  const container =
+    document.getElementById("recipes");
 
   container.innerHTML = "";
 
-  let list = recipes;
 
-  if (favoritesOnly) {
+  if (!recipes.length) {
 
-    list = recipes.filter(recipe =>
-      localStorage.getItem("favorite_" + recipe.name) === "true"
-    );
+    container.innerHTML =
+      "<p>Поки немає рецептів 🍽️</p>";
+
+    return;
 
   }
 
-  list.forEach(recipe => {
 
-    const card = document.createElement("div");
+  recipes.forEach((recipe, index) => {
+
+    const card =
+      document.createElement("div");
 
     card.className = "card";
+
 
     card.innerHTML = `
 
       <img
-        src="${recipe.image}"
-        alt="${recipe.name}"
+        src="${recipe.image || "https://placehold.co/600x400?text=🍽️"}"
+        alt="${escapeHTML(recipe.name)}"
       >
 
       <div class="card-content">
 
-        <h2>${recipe.name}</h2>
+        <h2>
+          ${escapeHTML(recipe.name)}
+        </h2>
+
 
         <div class="ingredients">
-          🛒 ${recipe.ingredients}
+
+          🛒 ${escapeHTML(recipe.ingredients)}
+
         </div>
+
 
         <div class="actions">
 
           <button
             class="want"
-            onclick="wantRecipe('${escapeQuotes(recipe.name)}')"
+            onclick="wantRecipe(${index})"
           >
             ❤️ ХОЧУ
           </button>
 
+
           <button
             class="tiktok"
-            onclick="openTikTok('${recipe.tiktok}')"
+            onclick="openTikTok(${index})"
           >
             🎵 TikTok
           </button>
 
         </div>
 
-        <br>
-
-        <button
-          onclick="rateRecipe('${escapeQuotes(recipe.name)}')"
-        >
-          ⭐ Оцінити
-        </button>
-
       </div>
+
     `;
+
 
     container.appendChild(card);
 
@@ -163,63 +151,53 @@ function renderRecipes() {
 }
 
 
-function escapeQuotes(text) {
+// =====================================================
+// ХОЧУ ❤️
+// =====================================================
 
-  return text
-    .replace(/'/g, "\\'")
-    .replace(/"/g, '&quot;');
+async function wantRecipe(index) {
 
-}
-
-
-// ======================================================
-// 6. ХОЧУ ❤️
-// ======================================================
-
-async function wantRecipe(name) {
-
-  const recipe = recipes.find(r => r.name === name);
+  const recipe =
+    recipes[index];
 
   if (!recipe) return;
 
-  const ingredients = recipe.ingredients || "Інгредієнти не вказані";
 
   const message = `
-❤️ ХОЧУ приготувати:
 
-🍽️ ${name}
+❤️ ХОЧУ:
+
+🍽️ ${recipe.name}
 
 🛒 Продукти:
-${ingredients}
+${recipe.ingredients}
 
 🎵 TikTok:
 ${recipe.tiktok || "немає"}
+
 `;
 
-  // Запам'ятовуємо улюблене
-  localStorage.setItem(
-    "favorite_" + name,
-    "true"
-  );
 
-  // Відправляємо Telegram
   await sendTelegram(message);
 
-  alert("Відправлено ❤️");
+
+  alert(
+    "Відправлено в Telegram ❤️"
+  );
 
 }
 
 
-// ======================================================
-// 7. TELEGRAM
-// ======================================================
+// =====================================================
+// TELEGRAM
+// =====================================================
 
 async function sendTelegram(message) {
 
   if (!BOT_TOKEN || !CHAT_ID) {
 
     alert(
-      "Telegram не налаштований.\n\n" +
+      "Telegram ще не налаштований.\n\n" +
       "Відкрий додаток через посилання з token і chat."
     );
 
@@ -227,8 +205,10 @@ async function sendTelegram(message) {
 
   }
 
+
   const url =
     `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+
 
   try {
 
@@ -252,77 +232,47 @@ async function sendTelegram(message) {
 
   } catch (error) {
 
-    console.error("Telegram error:", error);
+    console.error(
+      "Telegram error:",
+      error
+    );
 
   }
 
 }
 
 
-// ======================================================
-// 8. TIKTOK
-// ======================================================
+// =====================================================
+// TIKTOK
+// =====================================================
 
-function openTikTok(url) {
+function openTikTok(index) {
 
-  if (!url) {
+  const recipe =
+    recipes[index];
 
-    alert("Посилання на TikTok немає");
+  if (!recipe.tiktok) {
+
+    alert(
+      "Для цієї страви немає TikTok 😢"
+    );
 
     return;
 
   }
 
-  window.open(url, "_blank");
 
-}
-
-
-// ======================================================
-// 9. ОЦІНКА
-// ======================================================
-
-function rateRecipe(name) {
-
-  const rating = prompt(
-    `Оціни "${name}" від 1 до 5 ⭐`
+  window.open(
+    recipe.tiktok,
+    "_blank"
   );
 
-  const number = Number(rating);
-
-  if (
-    number >= 1 &&
-    number <= 5
-  ) {
-
-    localStorage.setItem(
-      "rating_" + name,
-      number
-    );
-
-    alert(`Оцінка ${number} ⭐ збережена`);
-
-  }
-
 }
 
 
-// ======================================================
-// 10. УЛЮБЛЕНІ
-// ======================================================
-
-function showFavorites() {
-
-  favoritesOnly = !favoritesOnly;
-
-  renderRecipes();
-
-}
-
-
-// ======================================================
-// 11. ЗАПРОПОНУВАТИ
-// ======================================================
+// =====================================================
+// ФОРМА
+// =====================================================
 
 function showAddForm() {
 
@@ -331,6 +281,7 @@ function showAddForm() {
     .classList.remove("hidden");
 
 }
+
 
 function hideAddForm() {
 
@@ -341,67 +292,222 @@ function hideAddForm() {
 }
 
 
-// ======================================================
-// 12. ДОДАТИ РЕЦЕПТ
-// ======================================================
+// =====================================================
+// ДОДАТИ РЕЦЕПТ
+// =====================================================
 
 async function addRecipe() {
 
   const name =
-    document.getElementById("newName").value.trim();
+    document
+      .getElementById("newName")
+      .value
+      .trim();
+
 
   const image =
-    document.getElementById("newImage").value.trim();
+    document
+      .getElementById("newImage")
+      .value
+      .trim();
+
 
   const tiktok =
-    document.getElementById("newTikTok").value.trim();
+    document
+      .getElementById("newTikTok")
+      .value
+      .trim();
+
 
   const ingredients =
-    document.getElementById("newIngredients").value.trim();
+    document
+      .getElementById("newIngredients")
+      .value
+      .trim();
 
+
+  // --------------------------------
+  // Перевірка
+  // --------------------------------
 
   if (!name) {
 
-    alert("Напиши назву страви");
+    alert(
+      "Напиши назву страви 🍝"
+    );
 
     return;
 
   }
 
 
-  const message = `
-➕ НОВИЙ РЕЦЕПТ
+  if (!ingredients) {
+
+    alert(
+      "Напиши інгредієнти 🛒"
+    );
+
+    return;
+
+  }
+
+
+  // --------------------------------
+  // Кнопка
+  // --------------------------------
+
+  const button =
+    document.querySelector(
+      "#addForm .form-buttons button"
+    );
+
+
+  button.disabled = true;
+
+  button.textContent =
+    "Додаю...";
+
+
+  try {
+
+
+    // --------------------------------
+    // Відправляємо в Google Sheets
+    // --------------------------------
+
+    const response =
+      await fetch(API_URL, {
+
+        method: "POST",
+
+        headers: {
+
+          "Content-Type":
+            "text/plain;charset=utf-8"
+
+        },
+
+        body: JSON.stringify({
+
+          name: name,
+
+          image: image,
+
+          tiktok: tiktok,
+
+          ingredients: ingredients
+
+        })
+
+      });
+
+
+    const result =
+      await response.json();
+
+
+    if (!result.success) {
+
+      throw new Error(
+        result.error || "Помилка"
+      );
+
+    }
+
+
+    // --------------------------------
+    // Telegram
+    // --------------------------------
+
+    await sendTelegram(`
+
+➕ НОВИЙ РЕЦЕПТ:
 
 🍽️ ${name}
 
-🛒 Інгредієнти:
-${ingredients}
+🛒 ${ingredients}
 
-🎵 TikTok:
-${tiktok}
+🎵 ${tiktok || "TikTok не вказано"}
 
-🖼️ Фото:
-${image}
-`;
+    `);
 
 
-  // Надсилаємо тобі пропозицію в Telegram
-  await sendTelegram(message);
+    // --------------------------------
+    // Очистити форму
+    // --------------------------------
+
+    document
+      .getElementById("newName")
+      .value = "";
+
+    document
+      .getElementById("newImage")
+      .value = "";
+
+    document
+      .getElementById("newTikTok")
+      .value = "";
+
+    document
+      .getElementById("newIngredients")
+      .value = "";
 
 
-  alert(
-    "Рецепт запропоновано ❤️\n\n" +
-    "Він прийшов у Telegram."
-  );
+    hideAddForm();
 
 
-  hideAddForm();
+    // --------------------------------
+    // ЗАНОВО ЗАВАНТАЖУЄМО РЕЦЕПТИ
+    // --------------------------------
+
+    await loadRecipes();
+
+
+    alert(
+      "Рецепт додано ❤️"
+    );
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert(
+      "Не вдалося додати рецепт 😢\n\n" +
+      error.message
+    );
+
+
+  } finally {
+
+    button.disabled = false;
+
+    button.textContent =
+      "Додати";
+
+  }
 
 }
 
 
-// ======================================================
+// =====================================================
+// БЕЗПЕЧНИЙ ТЕКСТ
+// =====================================================
+
+function escapeHTML(text) {
+
+  return String(text || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+
+// =====================================================
 // СТАРТ
-// ======================================================
+// =====================================================
 
 loadRecipes();
