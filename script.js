@@ -5,7 +5,7 @@
 // 🔴 ВСТАВ СЮДИ URL СВОГО GOOGLE APPS SCRIPT
 
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbw4VbZ5BNNO6hzX8FpwptsCaOeASl1oWrlrWAY4lUJXq4oizuAKVx2pCJ6DlmW0jdE0/exec";
+  "https://script.google.com/macros/s/AKfycbwkl3fM_UidWHeuec2cxe2DllM7ZrRH-gjgjYrVmJLXyHSxsD3z1xlTq-SNlToe6WMl/exec";
 
 
 // =====================================================
