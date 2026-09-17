@@ -1,382 +1,52 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Що приготувати?</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg:#16130f;
-    --bg2:#1e1a15;
-    --card:#221d17;
-    --card-hi:#2b241c;
-    --ink:#f2e9dc;
-    --sub:#9c8e7c;
-    --line:#352c22;
-    --amber:#e0a33e;
-    --clay:#b8593f;
-    --sage:#7d9471;
-  }
-  *{box-sizing:border-box;}
-  html,body{margin:0;background:var(--bg);color:var(--ink);}
-  body{
-    font-family:'Inter',system-ui,sans-serif;
-    background-image:radial-gradient(900px 500px at 15% -10%, #2a2119 0%, transparent 60%);
-    min-height:100vh;
-  }
-  header{padding:34px 22px 10px;max-width:1000px;margin:0 auto;}
-  h1{
-    font-family:'Fraunces',Georgia,serif;
-    font-weight:600;
-    font-size:2.1rem;
-    letter-spacing:-0.01em;
-    margin:0 0 6px;
-  }
-  .sub{color:var(--sub);font-size:0.9rem;margin-bottom:22px;}
-  .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:18px;}
-  .tabs{display:flex;gap:4px;background:var(--bg2);padding:4px;border-radius:999px;border:1px solid var(--line);}
-  .tab{padding:7px 16px;border-radius:999px;cursor:pointer;font-size:0.87rem;color:var(--sub);transition:.18s;}
-  .tab:hover{color:var(--ink);}
-  .tab.active{background:var(--amber);color:#1a1510;font-weight:600;}
-  select, input, textarea{
-    font-family:inherit;font-size:0.9rem;padding:9px 11px;border-radius:10px;
-    border:1px solid var(--line);background:var(--bg2);color:var(--ink);
-  }
-  select:focus, input:focus, textarea:focus{outline:none;border-color:var(--amber);}
-  input::placeholder, textarea::placeholder{color:#6d6154;}
-  button.btn{
-    padding:10px 18px;border-radius:999px;border:none;background:var(--amber);color:#1a1510;
-    cursor:pointer;font-size:0.88rem;font-weight:600;font-family:inherit;transition:.18s;
-  }
-  button.btn:hover{background:#efb552;}
-  button.btn.secondary{background:transparent;border:1px solid var(--line);color:var(--sub);}
-  button.btn.secondary:hover{color:var(--ink);border-color:var(--sub);}
-  .spacer{flex:1;}
-  .lbl{font-size:0.82rem;color:var(--sub);}
-  main{max-width:1000px;margin:0 auto;padding:0 22px 70px;}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px;}
-  .card{
-    background:var(--card);border:1px solid var(--line);border-radius:16px;
-    overflow:hidden;display:flex;flex-direction:column;transition:.2s;
-  }
-  .card:hover{background:var(--card-hi);border-color:#463a2c;}
-  .card .photo{position:relative;}
-  .card img{width:100%;height:165px;object-fit:cover;display:block;}
-  .card .noimg{
-    width:100%;height:165px;display:flex;align-items:center;justify-content:center;
-    font-size:2.4rem;opacity:.35;
-    background:repeating-linear-gradient(45deg,#241e18,#241e18 10px,#1f1a14 10px,#1f1a14 20px);
-  }
-  .badge{
-    position:absolute;top:10px;right:10px;background:rgba(15,12,9,.8);backdrop-filter:blur(4px);
-    color:var(--amber);font-size:0.75rem;font-weight:600;padding:4px 9px;border-radius:999px;
-  }
-  .card-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:9px;flex:1;}
-  .card-body h3{
-    margin:0;font-family:'Fraunces',Georgia,serif;font-weight:600;
-    font-size:1.12rem;line-height:1.25;
-  }
-  a.tt{font-size:0.82rem;color:var(--sage);text-decoration:none;}
-  a.tt:hover{text-decoration:underline;}
-  .stars{display:flex;gap:3px;cursor:pointer;font-size:1rem;color:#403629;align-items:center;}
-  .stars span.filled{color:var(--amber);}
-  .stars span:hover{color:var(--amber);}
-  .ingr-toggle{font-size:0.8rem;color:var(--sub);cursor:pointer;border-bottom:1px dotted var(--sub);align-self:flex-start;}
-  .ingr-toggle:hover{color:var(--ink);}
-  .ingr-list{font-size:0.84rem;color:#c9bcab;padding-left:17px;margin:2px 0;display:none;line-height:1.55;}
-  .ingr-list.open{display:block;}
-  .row-bottom{display:flex;align-items:center;gap:8px;margin-top:auto;padding-top:4px;}
-  .want-btn{
-    flex:1;padding:10px;border-radius:11px;border:1px solid var(--clay);background:transparent;
-    color:#e4866a;cursor:pointer;font-weight:600;font-size:0.85rem;font-family:inherit;
-    letter-spacing:.04em;transition:.18s;
-  }
-  .want-btn:hover{background:rgba(184,89,63,.15);}
-  .want-btn.active{background:var(--clay);color:#fff5f0;border-color:var(--clay);}
-  .del-btn{background:none;border:none;color:#5a4d3e;cursor:pointer;font-size:0.95rem;padding:6px;}
-  .del-btn:hover{color:var(--clay);}
-  .modal-bg{position:fixed;inset:0;background:rgba(8,6,4,.72);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:20px;z-index:10;}
-  .modal-bg.open{display:flex;}
-  .modal{
-    background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:26px;
-    max-width:460px;width:100%;max-height:90vh;overflow:auto;
-  }
-  .modal h2{margin:0 0 18px;font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:1.4rem;}
-  .field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
-  .field label{font-size:0.82rem;color:var(--sub);}
-  .field input, .field textarea{width:100%;}
-  .field input[type=file]{padding:7px;font-size:0.8rem;color:var(--sub);}
-  .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:6px;}
-  .status{font-size:0.8rem;color:var(--sub);margin-bottom:12px;min-height:1.2em;}
-  .empty{color:var(--sub);padding:50px 20px;text-align:center;grid-column:1/-1;font-size:0.95rem;}
-  ::-webkit-scrollbar{width:10px;}
-  ::-webkit-scrollbar-track{background:var(--bg);}
-  ::-webkit-scrollbar-thumb{background:#3a3126;border-radius:8px;}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Що готуємо?</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<header>
-  <h1>Що приготувати?</h1>
-  <div class="sub">Спільний список страв на двох</div>
-  <div class="status" id="status"></div>
-  <div class="toolbar">
-    <div class="tabs">
-      <div class="tab active" data-tab="all">Усі страви</div>
-      <div class="tab" data-tab="top">Улюблені</div>
-    </div>
-    <div class="spacer"></div>
-    <button class="btn" id="addBtn">+ Додати рецепт</button>
-  </div>
-</header>
+<div class="container">
 
-<main>
-  <div class="grid" id="grid"></div>
-</main>
+  <h1>🍽️ Що готуємо?</h1>
 
-<div class="modal-bg" id="modalBg">
-  <div class="modal">
-    <h2>Новий рецепт</h2>
-    <div class="field"><label>Назва страви</label><input id="f_title" placeholder="Паста з креветками"></div>
-    <div class="field"><label>Посилання (TikTok чи інше)</label><input id="f_link" placeholder="https://www.tiktok.com/..."></div>
-    <div class="field"><label>Фото — посилання</label><input id="f_photoUrl" placeholder="https://...jpg (необов'язково)"></div>
-    <div class="field"><label>...або завантажити файл</label><input id="f_photoFile" type="file" accept="image/*"></div>
-    <div class="field"><label>Інгредієнти (кожен з нового рядка)</label>
-      <textarea id="f_ingr" rows="5" placeholder="креветки&#10;спагеті&#10;часник&#10;вершки"></textarea>
-    </div>
-    <div class="modal-actions">
-      <button class="btn secondary" id="cancelBtn">Скасувати</button>
-      <button class="btn" id="saveBtn">Зберегти</button>
-    </div>
+  <div class="top-buttons">
+    <button onclick="showAddForm()">➕ Запропонувати</button>
+    <button onclick="showFavorites()">❤️ Улюблені</button>
   </div>
+
+  <div id="recipes" class="recipes"></div>
+
+  <!-- ФОРМА ДОДАВАННЯ -->
+  <div id="addForm" class="form hidden">
+
+    <h2>➕ Новий рецепт</h2>
+
+    <input id="newName" placeholder="Назва страви">
+
+    <input id="newImage" placeholder="Посилання на фото">
+
+    <input id="newTikTok" placeholder="Посилання на TikTok">
+
+    <textarea
+      id="newIngredients"
+      placeholder="Інгредієнти через кому:
+картопля, курка, сир..."
+    ></textarea>
+
+    <div class="form-buttons">
+      <button onclick="addRecipe()">Додати</button>
+      <button onclick="hideAddForm()">Скасувати</button>
+    </div>
+
+  </div>
+
 </div>
 
-<script>
-/* ======================= НАЛАШТУВАННЯ — ВСТАВ СВОЇ ДАНІ СЮДИ ======================= */
-const CONFIG = {
-  // --- GitHub (тут зберігаються всі рецепти у файлі recipes.json) ---
-  GITHUB_OWNER:   'ТВІЙ_GITHUB_ЛОГІН',      // напр. 'katia-krasulia'
-  GITHUB_REPO:    'НАЗВА_РЕПОЗИТОРІЮ',       // напр. 'recipes-app'
-  GITHUB_TOKEN:   'ТВІЙ_ТОКЕН',              // fine-grained token, лише для цього репо, права: Contents: Read & Write
-  GITHUB_FILE_PATH: 'recipes.json',
-  GITHUB_BRANCH:  'main',
+<script src="script.js"></script>
 
-  // --- Telegram (сповіщення "ХОЧУ" з посиланням і списком продуктів) ---
-  TELEGRAM_BOT_TOKEN: 'ТОКЕН_БОТА_ВІД_BOTFATHER',
-  TELEGRAM_CHAT_ID:   'ID_СПІЛЬНОГО_ЧАТУ'    // група, де ви обидва (з мінусом, напр. -1001234567890)
-};
-let recipes = [];
-let fileSha = null;
-let currentTab = 'all';
-
-const gh = (path='') => `https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO}/contents/${CONFIG.GITHUB_FILE_PATH}${path}`;
-
-function setStatus(msg, isError){
-  const el = document.getElementById('status');
-  el.textContent = msg;
-  el.style.color = isError ? '#e07a5f' : '#9c8e7c';
-}
-
-function b64EncodeUnicode(str){ return btoa(unescape(encodeURIComponent(str))); }
-function b64DecodeUnicode(str){ return decodeURIComponent(escape(atob(str))); }
-
-async function loadRecipes(){
-  setStatus('Завантаження рецептів...');
-  try{
-    const res = await fetch(gh(`?ref=${CONFIG.GITHUB_BRANCH}`), {
-      headers: { 'Authorization': `token ${CONFIG.GITHUB_TOKEN}`, 'Accept': 'application/vnd.github+json' }
-    });
-    if(!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
-    fileSha = data.sha;
-    recipes = JSON.parse(b64DecodeUnicode(data.content) || '[]');
-    setStatus('');
-  }catch(e){
-    setStatus('Не вдалось завантажити з GitHub. Перевір CONFIG у коді. (' + e.message + ')', true);
-    recipes = [];
-  }
-  render();
-}
-
-async function saveRecipes(){
-  setStatus('Збереження...');
-  try{
-    const cur = await fetch(gh(`?ref=${CONFIG.GITHUB_BRANCH}`), {
-      headers: { 'Authorization': `token ${CONFIG.GITHUB_TOKEN}`, 'Accept': 'application/vnd.github+json' }
-    });
-    if(cur.ok){ const curData = await cur.json(); fileSha = curData.sha; }
-
-    const res = await fetch(gh(), {
-      method: 'PUT',
-      headers: { 'Authorization': `token ${CONFIG.GITHUB_TOKEN}`, 'Accept': 'application/vnd.github+json' },
-      body: JSON.stringify({
-        message: 'Оновлення рецептів',
-        content: b64EncodeUnicode(JSON.stringify(recipes, null, 2)),
-        sha: fileSha,
-        branch: CONFIG.GITHUB_BRANCH
-      })
-    });
-    if(!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
-    fileSha = data.content.sha;
-    setStatus('Збережено ✓');
-    setTimeout(()=>setStatus(''), 1500);
-  }catch(e){
-    setStatus('Не вдалось зберегти на GitHub. (' + e.message + ')', true);
-  }
-}
-
-async function sendTelegram(recipe){
-  const lines = [
-    `🍽 Хочеться: <b>${recipe.title}</b>`,
-    recipe.link ? `🔗 ${recipe.link}` : null,
-    recipe.ingredients && recipe.ingredients.length ? `\n🛒 Продукти:\n` + recipe.ingredients.map(i=>'- '+i).join('\n') : null
-  ].filter(Boolean).join('\n');
-
-  try{
-    if(recipe.photo && recipe.photo.startsWith('http')){
-      await fetch(`https://api.telegram.org/bot${CONFIG.TELEGRAM_BOT_TOKEN}/sendPhoto`, {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ chat_id: CONFIG.TELEGRAM_CHAT_ID, photo: recipe.photo, caption: lines, parse_mode:'HTML' })
-      });
-    } else {
-      await fetch(`https://api.telegram.org/bot${CONFIG.TELEGRAM_BOT_TOKEN}/sendMessage`, {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ chat_id: CONFIG.TELEGRAM_CHAT_ID, text: lines, parse_mode:'HTML' })
-      });
-    }
-  }catch(e){ console.warn('Telegram не надіслано', e); }
-}
-
-function ratingOf(r){ return r.rating || 0; }
-
-function render(){
-  const grid = document.getElementById('grid');
-  grid.innerHTML = '';
-  let list = [...recipes];
-  if(currentTab === 'top'){
-    list = list.filter(r => ratingOf(r) > 0).sort((a,b)=>ratingOf(b)-ratingOf(a));
-  }
-  if(!list.length){
-    grid.innerHTML = `<div class="empty">${currentTab==='top' ? 'Ще немає оцінених страв' : 'Поки немає рецептів — додай перший'}</div>`;
-    return;
-  }
-  list.forEach((r,i) => grid.appendChild(renderCard(r, currentTab==='top' ? i+1 : null)));
-}
-
-function renderCard(r, rank){
-  const div = document.createElement('div');
-  div.className = 'card';
-
-  const rating = ratingOf(r);
-  const iWant = !!r.wanted;
-
-  div.innerHTML = `
-    <div class="photo">
-      ${r.photo ? `<img src="${escapeAttr(r.photo)}" alt="">` : `<div class="noimg">🍲</div>`}
-      ${rank ? `<div class="badge">№${rank}</div>` : ''}
-    </div>
-    <div class="card-body">
-      <h3>${escapeHtml(r.title)}</h3>
-      ${r.link ? `<a class="tt" href="${escapeAttr(r.link)}" target="_blank">переглянути рецепт ↗</a>` : ''}
-      <div class="stars">
-        ${[1,2,3,4,5].map(n=>`<span data-val="${n}" class="${n<=rating?'filled':''}">★</span>`).join('')}
-        
-      </div>
-      ${r.ingredients && r.ingredients.length ? `
-        <div class="ingr-toggle">продукти (${r.ingredients.length})</div>
-        <ul class="ingr-list">${r.ingredients.map(i=>`<li>${escapeHtml(i)}</li>`).join('')}</ul>
-      ` : ''}
-      <div class="row-bottom">
-        <button class="want-btn ${iWant?'active':''}">${iWant ? '✓ ХОЧУ' : 'ХОЧУ'}</button>
-        <button class="del-btn" title="Видалити">✕</button>
-      </div>
-    </div>
-  `;
-
-  div.querySelector('.ingr-toggle')?.addEventListener('click', (e)=>{
-    e.target.nextElementSibling.classList.toggle('open');
-  });
-
-  div.querySelectorAll('.stars span[data-val]').forEach(star=>{
-    star.addEventListener('click', ()=>{
-      const v = parseInt(star.dataset.val);
-      r.rating = (r.rating === v) ? 0 : v;   // повторний клік по тій самій зірці — скинути оцінку
-      saveRecipes();
-      render();
-    });
-  });
-
-  div.querySelector('.want-btn').addEventListener('click', ()=>{
-    r.wanted = !r.wanted;
-    if(r.wanted) sendTelegram(r);
-    saveRecipes();
-    render();
-  });
-
-  div.querySelector('.del-btn').addEventListener('click', ()=>{
-    if(confirm('Видалити рецепт "'+r.title+'"?')){
-      recipes = recipes.filter(x=>x.id!==r.id);
-      saveRecipes();
-      render();
-    }
-  });
-
-  return div;
-}
-
-function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
-function escapeAttr(s){ return String(s).replace(/"/g,'&quot;'); }
-
-document.querySelectorAll('.tab').forEach(t=>{
-  t.addEventListener('click', ()=>{
-    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-    t.classList.add('active');
-    currentTab = t.dataset.tab;
-    render();
-  });
-});
-
-
-const modalBg = document.getElementById('modalBg');
-document.getElementById('addBtn').addEventListener('click', ()=>{
-  ['f_title','f_link','f_photoUrl','f_photoFile','f_ingr'].forEach(id=>document.getElementById(id).value='');
-  modalBg.classList.add('open');
-});
-document.getElementById('cancelBtn').addEventListener('click', ()=> modalBg.classList.remove('open'));
-
-document.getElementById('saveBtn').addEventListener('click', ()=>{
-  const title = document.getElementById('f_title').value.trim();
-  if(!title){ alert('Введи назву страви'); return; }
-  const link = document.getElementById('f_link').value.trim();
-  const photoUrl = document.getElementById('f_photoUrl').value.trim();
-  const file = document.getElementById('f_photoFile').files[0];
-  const ingr = document.getElementById('f_ingr').value.split('\n').map(s=>s.trim()).filter(Boolean);
-
-  const finish = (photo)=>{
-    recipes.push({
-      id: Date.now()+'_'+Math.random().toString(36).slice(2,7),
-      title, link, photo: photo || '', ingredients: ingr,
-      rating: 0, wanted: false, createdAt: new Date().toISOString()
-    });
-    modalBg.classList.remove('open');
-    saveRecipes();
-    render();
-  };
-
-  if(file){
-    const reader = new FileReader();
-    reader.onload = () => finish(reader.result);
-    reader.readAsDataURL(file);
-  } else {
-    finish(photoUrl);
-  }
-});
-
-loadRecipes();
-</script>
 </body>
 </html>
