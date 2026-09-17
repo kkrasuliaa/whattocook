@@ -29,12 +29,19 @@
 
   <div class="top-buttons">
 
-    <button onclick="showAddForm()">
-      ➕ Запропонувати
+    <button
+      class="add-button"
+      onclick="showAddForm()"
+    >
+      ➕ Запропонувати рецепт
     </button>
 
   </div>
 
+
+  <!-- ========================================= -->
+  <!-- РЕЦЕПТИ -->
+  <!-- ========================================= -->
 
   <div
     id="recipes"
@@ -43,7 +50,7 @@
 
 
   <!-- ========================================= -->
-  <!-- ФОРМА НОВОГО РЕЦЕПТА -->
+  <!-- ФОРМА -->
   <!-- ========================================= -->
 
   <div
@@ -71,20 +78,29 @@
     <textarea
       id="newIngredients"
       placeholder="Інгредієнти:
+
 картопля
 курка
 сир
-сметана"
+сметана
+спеції"
     ></textarea>
 
 
     <div class="form-buttons">
 
-      <button onclick="addRecipe()">
+      <button
+        class="save-button"
+        onclick="addRecipe()"
+      >
         Додати ❤️
       </button>
 
-      <button onclick="hideAddForm()">
+
+      <button
+        class="cancel-button"
+        onclick="hideAddForm()"
+      >
         Скасувати
       </button>
 
@@ -95,7 +111,17 @@
 </div>
 
 
+<!-- Спочатку наш JS -->
 <script src="script.js"></script>
+
+
+<!-- Потім TikTok -->
+<script
+  async
+  src="https://www.tiktok.com/embed.js"
+  onload="renderTikTokEmbeds()"
+></script>
+
 
 </body>
 
