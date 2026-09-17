@@ -1,11 +1,24 @@
 <!DOCTYPE html>
 <html lang="uk">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
   <title>Що готуємо?</title>
-  <link rel="stylesheet" href="style.css">
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
 </head>
+
 
 <body>
 
@@ -13,40 +26,77 @@
 
   <h1>🍽️ Що готуємо?</h1>
 
+
   <div class="top-buttons">
-    <button onclick="showAddForm()">➕ Запропонувати</button>
-    <button onclick="showFavorites()">❤️ Улюблені</button>
+
+    <button onclick="showAddForm()">
+      ➕ Запропонувати
+    </button>
+
   </div>
 
-  <div id="recipes" class="recipes"></div>
 
-  <!-- ФОРМА ДОДАВАННЯ -->
-  <div id="addForm" class="form hidden">
+  <div
+    id="recipes"
+    class="recipes"
+  ></div>
 
-    <h2>➕ Новий рецепт</h2>
 
-    <input id="newName" placeholder="Назва страви">
+  <!-- ========================================= -->
+  <!-- ФОРМА НОВОГО РЕЦЕПТА -->
+  <!-- ========================================= -->
 
-    <input id="newImage" placeholder="Посилання на фото">
+  <div
+    id="addForm"
+    class="form hidden"
+  >
 
-    <input id="newTikTok" placeholder="Посилання на TikTok">
+    <h2>➕ Запропонувати рецепт</h2>
+
+
+    <input
+      id="newName"
+      type="text"
+      placeholder="Назва страви"
+    >
+
+
+    <input
+      id="newTikTok"
+      type="url"
+      placeholder="Посилання на TikTok"
+    >
+
 
     <textarea
       id="newIngredients"
-      placeholder="Інгредієнти через кому:
-картопля, курка, сир..."
+      placeholder="Інгредієнти:
+картопля
+курка
+сир
+сметана"
     ></textarea>
 
+
     <div class="form-buttons">
-      <button onclick="addRecipe()">Додати</button>
-      <button onclick="hideAddForm()">Скасувати</button>
+
+      <button onclick="addRecipe()">
+        Додати ❤️
+      </button>
+
+      <button onclick="hideAddForm()">
+        Скасувати
+      </button>
+
     </div>
 
   </div>
 
 </div>
 
+
 <script src="script.js"></script>
 
 </body>
+
 </html>
